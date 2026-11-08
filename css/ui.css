@@ -17,7 +17,6 @@ body {
   line-height: 1.5;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
-  transition: background-color var(--dur-slow) var(--ease-out);
 }
 
 button, input { font: inherit; color: inherit; }
@@ -93,6 +92,9 @@ button, input { font: inherit; color: inherit; }
 .obj[data-obj="mug"]    { --x: 490;  --y: 500; --w: 96;  --h: 144; }
 .obj[data-obj="cat"]    { --x: 256;  --y: 548; --w: 210; --h: 96; }
 
+/* The cat and the mug sit in front of the window's lower edge. */
+.obj { z-index: 1; }
+.obj[data-obj="window"] { z-index: 0; }
 .obj:hover, .obj:has(:focus-visible), .obj[data-active] { z-index: 5; }
 
 .obj-btn {
@@ -314,6 +316,59 @@ button, input { font: inherit; color: inherit; }
 
 .popover-actions { display: flex; justify-content: flex-end; }
 
+.settings-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+.settings-note:empty { display: none; }
+
+/* Shortcuts: centred, a short list of keys. */
+.popover--centre {
+  left: 50%;
+  top: 50%;
+  translate: -50% calc(-50% + 6px);
+  width: min(360px, calc(100vw - 32px));
+}
+.popover--centre[data-open] { translate: -50% -50%; }
+
+.keys { display: grid; gap: 2px; margin: 4px 0 8px; }
+.keys > div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 34px;
+  border-bottom: 1px solid color-mix(in oklab, var(--paper), transparent 90%);
+}
+.keys dt, .keys dd { margin: 0; }
+.keys dd { font-size: var(--step-0); }
+
+kbd {
+  display: inline-block;
+  min-width: 1.9em;
+  padding: 1px 6px 2px;
+  border: 1px solid color-mix(in oklab, var(--paper), transparent 70%);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: var(--step--1);
+  text-align: center;
+}
+
+/* A quiet way in to the shortcuts, for people with a keyboard. */
+.keys-btn {
+  position: fixed;
+  z-index: 15;
+  right: 20px;
+  bottom: 14px;
+  color: var(--text-muted);
+}
+@media (hover: none), (pointer: coarse) {
+  .keys-btn { display: none; }
+}
+
 /* --- Sliders -------------------------------------------------------------- */
 .slider {
   --pct: 50%;
@@ -388,6 +443,8 @@ button, input { font: inherit; color: inherit; }
   .obj[data-obj="stove"],
   .obj[data-obj="radio"],
   .obj[data-obj="lamp"] { display: none; }
+
+  .keys-btn { display: none; }
 
   /* Room for the readout and status line above the scene. */
   :root { --hud-h: calc(118px + env(safe-area-inset-top)); }

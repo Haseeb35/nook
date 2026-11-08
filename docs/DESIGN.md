@@ -80,8 +80,12 @@ are used only as opacities.
 | `--fire`        | follows crackle volume (0 to 1) | | | | Stove flame and floor glow |
 
 Times: morning 05:00–11:59, afternoon 12:00–16:59, evening 17:00–20:59,
-night 21:00–04:59, from the visitor's local clock. A change of period
-crossfades the tokens over 800 ms.
+night 21:00–04:59, from the visitor's local clock. The six colours and the
+light levels are registered with `@property`, so a change of period
+crossfades the whole room over 2.4 s (slower than UI motion on purpose: it is
+the light changing, not a control responding). `js/early.js` sets the first
+period before paint, so the room never opens in the wrong light.
+`?time=morning|afternoon|evening|night` pins one for review.
 
 ### Contrast (WCAG AA)
 
@@ -321,4 +325,33 @@ copies it into the SVG `viewBox`, so the buttons and the drawing always agree.
   quietly leaves the room (its object becomes scenery, its shelf row goes).
 - **Chime**: a single soft bell when a session ends on its own (not on skip,
   not for one that ended while the page was closed).
+
+---
+
+## 9. Keyboard, notifications, offline
+
+- **Keys**: Space start/pause · S skip · M mute everything · 1–4 rain, café,
+  fire, radio · ? the list of keys · Esc closes whatever is open. Shortcuts
+  never fire while typing or while a popover is open. Turning a sound on
+  while muted unmutes.
+- **Notifications** (optional, in the clock settings): asked for only when
+  the box is ticked, shown only when the tab is not visible, through the
+  service worker where there is one. Clicking one brings the room back.
+- **Offline**: `sw.js` caches the app shell on install and each sound the
+  first time it plays (stale-while-revalidate), so a second visit works
+  without a network. Bump `VERSION` in `sw.js` on a release.
+- **Installable**: `manifest.webmanifest` with a rounded icon and a full-bleed
+  maskable one (the window, the rain and the cat, inside the safe zone).
+
+## 10. Accessibility
+
+- Every object is a real `<button>` with an `aria-label` and `aria-pressed`
+  where it toggles; Tab moves through the room left to right.
+- The status line is a polite live region; the clock's spoken label changes
+  once a minute, not every second.
+- Contrast is measured on rendered colours in all four lights (lowest body
+  text 5.04:1, lowest large readout 3.16:1, focus ring ≥ 4.08:1).
+- Touch targets are at least 44 px; nothing scrolls sideways at 360 px.
+- `prefers-reduced-motion`: rain, steam, flames, breathing, the tail flick
+  and the stretch stop; only fades remain.
 

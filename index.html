@@ -7,8 +7,12 @@
   <meta name="description" content="A quiet room to focus in. Rain, a kettle, a stove, a radio and a desk clock that keeps your Pomodoro.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#2b2a33">
+  <meta name="apple-mobile-web-app-title" content="Nook">
   <title>Nook</title>
+  <script src="js/early.js"></script>
   <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="preload" href="fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/fraunces-var-italic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -446,34 +450,18 @@
           </div></div>
         </div>
 
-        <div class="obj" data-obj="note">
-          <button class="obj-btn" type="button" aria-label="Sticky note. Edit this session's one task"></button>
+        <div class="obj" data-obj="cat">
+          <button class="obj-btn" type="button" aria-label="The cat, asleep"></button>
           <div class="tag"><div class="tag-inner">
-            <label class="tag-label" for="task-input">The one thing</label>
-            <input class="tag-input" id="task-input" type="text" maxlength="40" autocomplete="off" spellcheck="true" placeholder="What is this session for?">
+            <span class="tag-label">The cat <span class="tag-state">asleep</span></span>
           </div></div>
         </div>
 
-        <div class="obj" data-obj="stove" data-sound="fire">
-          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Fire in the stove"></button>
+        <div class="obj" data-obj="mug" data-sound="cafe">
+          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Mug, café sounds"></button>
           <div class="tag"><div class="tag-inner">
-            <span class="tag-label">Fire <span class="tag-state">off</span></span>
-            <input class="slider" type="range" min="0" max="100" step="1" value="50" aria-label="Fire volume">
-          </div></div>
-        </div>
-
-        <div class="obj" data-obj="radio" data-sound="radio">
-          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Radio, soft music"></button>
-          <div class="tag"><div class="tag-inner">
-            <span class="tag-label">Radio <span class="tag-state">off</span></span>
-            <input class="slider" type="range" min="0" max="100" step="1" value="45" aria-label="Radio volume">
-          </div></div>
-        </div>
-
-        <div class="obj" data-obj="lamp">
-          <button class="obj-btn" type="button" aria-pressed="true" aria-label="Desk lamp"></button>
-          <div class="tag"><div class="tag-inner">
-            <span class="tag-label">Lamp <span class="tag-state">on</span></span>
+            <span class="tag-label">Café <span class="tag-state">off</span></span>
+            <input class="slider" type="range" min="0" max="100" step="1" value="40" aria-label="Café volume">
           </div></div>
         </div>
 
@@ -488,18 +476,34 @@
           </div></div>
         </div>
 
-        <div class="obj" data-obj="mug" data-sound="cafe">
-          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Mug, café sounds"></button>
+        <div class="obj" data-obj="note">
+          <button class="obj-btn" type="button" aria-label="Sticky note. Edit this session's one task"></button>
           <div class="tag"><div class="tag-inner">
-            <span class="tag-label">Café <span class="tag-state">off</span></span>
-            <input class="slider" type="range" min="0" max="100" step="1" value="40" aria-label="Café volume">
+            <label class="tag-label" for="task-input">The one thing</label>
+            <input class="tag-input" id="task-input" type="text" maxlength="40" autocomplete="off" spellcheck="true" placeholder="What is this session for?">
           </div></div>
         </div>
 
-        <div class="obj" data-obj="cat">
-          <button class="obj-btn" type="button" aria-label="The cat, asleep"></button>
+        <div class="obj" data-obj="lamp">
+          <button class="obj-btn" type="button" aria-pressed="true" aria-label="Desk lamp"></button>
           <div class="tag"><div class="tag-inner">
-            <span class="tag-label">The cat <span class="tag-state">asleep</span></span>
+            <span class="tag-label">Lamp <span class="tag-state">on</span></span>
+          </div></div>
+        </div>
+
+        <div class="obj" data-obj="radio" data-sound="radio">
+          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Radio, soft music"></button>
+          <div class="tag"><div class="tag-inner">
+            <span class="tag-label">Radio <span class="tag-state">off</span></span>
+            <input class="slider" type="range" min="0" max="100" step="1" value="45" aria-label="Radio volume">
+          </div></div>
+        </div>
+
+        <div class="obj" data-obj="stove" data-sound="fire">
+          <button class="obj-btn" type="button" aria-pressed="false" aria-label="Fire in the stove"></button>
+          <div class="tag"><div class="tag-inner">
+            <span class="tag-label">Fire <span class="tag-state">off</span></span>
+            <input class="slider" type="range" min="0" max="100" step="1" value="50" aria-label="Fire volume">
           </div></div>
         </div>
       </div>
@@ -529,11 +533,33 @@
         <input name="autoStart" type="checkbox">
         <span>Start the next session on its own</span>
       </label>
+      <label class="check" data-row="notify">
+        <input name="notify" type="checkbox">
+        <span>Tell me when a session ends, even in another tab</span>
+      </label>
+      <p class="settings-note" role="status"></p>
       <div class="popover-actions">
         <button class="text-btn" type="submit">Done</button>
       </div>
     </form>
   </div>
+
+  <div class="popover popover--centre" id="shortcuts" role="dialog" aria-labelledby="shortcuts-title" hidden>
+    <h2 class="popover-title" id="shortcuts-title">Keys</h2>
+    <dl class="keys">
+      <div><dt><kbd>Space</kbd></dt><dd>Start or pause the clock</dd></div>
+      <div><dt><kbd>S</kbd></dt><dd>Skip to the next session</dd></div>
+      <div><dt><kbd>M</kbd></dt><dd>Mute everything</dd></div>
+      <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></dt><dd>Rain, café, fire, radio</dd></div>
+      <div><dt><kbd>?</kbd></dt><dd>This list</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>Close whatever is open</dd></div>
+    </dl>
+    <div class="popover-actions">
+      <button class="text-btn" type="button" data-close>Close</button>
+    </div>
+  </div>
+
+  <button class="keys-btn text-btn" type="button" aria-haspopup="dialog" aria-controls="shortcuts">Keys</button>
 
   <section class="drawer" id="drawer" data-open="false" aria-label="Sounds">
     <button class="drawer-handle" type="button" aria-expanded="false" aria-controls="drawer-body">

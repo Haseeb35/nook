@@ -55,10 +55,10 @@ export function createRoom({ onToggleSound, onVolume, onTask, onLamp, onClock, o
     }
   }
 
-  function renderDrawerSummary(playing) {
+  function renderDrawerSummary(playing, { muted = false } = {}) {
     const names = { rain: 'rain', cafe: 'café', fire: 'fire', radio: 'radio' };
     drawer.querySelector('.drawer-summary').textContent =
-      playing.length === 0 ? 'all quiet' : playing.map(n => names[n]).join(', ');
+      muted ? 'muted' : playing.length === 0 ? 'all quiet' : playing.map(n => names[n]).join(', ');
   }
 
   // --- Lamp ---------------------------------------------------------------

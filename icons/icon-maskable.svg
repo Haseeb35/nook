@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2b2a33"/>
+  <g>
+    <rect x="128" y="104" width="256" height="276" fill="#000" opacity=".28"/>
+    <rect x="136" y="112" width="240" height="260" fill="#7a5240"/>
+    <rect x="152" y="128" width="208" height="228" fill="#6a8099"/>
+    <path fill="#4a5a70" d="M152 356V270h22v-16h26v12h22v-30h20v8h14v22h22v-18h26v-22h10v22h18v16h20v-14h18v104z"/>
+    <path fill="#353f50" d="M152 356v-56h30v-12h34v20h24v-14h14v-10h30v16h28v-12h26v18h22v50z"/>
+    <g fill="#f2c57c"><rect x="162" y="306" width="5" height="7"/><rect x="194" y="296" width="5" height="7"/><rect x="226" y="316" width="5" height="7" opacity=".6"/><rect x="290" y="300" width="5" height="7"/><rect x="318" y="318" width="5" height="7" opacity=".7"/><rect x="342" y="306" width="5" height="7"/></g>
+    <g stroke="#b5c1cd" stroke-width="3" stroke-linecap="round" opacity=".7"><path d="M180 150l-2 18M214 176l-2 20M300 146l-2 18M332 186l-2 18M274 202l-2 16M190 222l-2 16M326 236l-2 14"/></g>
+    <rect x="251" y="128" width="10" height="228" fill="#7a5240"/>
+    <rect x="152" y="236" width="208" height="10" fill="#7a5240"/>
+    <rect x="120" y="370" width="272" height="18" fill="#93684f"/>
+    <rect x="128" y="388" width="256" height="10" fill="#4f352a"/>
+    <g>
+      <path fill="#b8834f" d="M300 371c-7-24-3-50 22-60 24 9 30 36 22 60z"/>
+      <path fill="#b8834f" d="M300 314l-2-24 16 13zM322 303l16-13-2 24z"/>
+      <ellipse cx="320" cy="318" rx="22" ry="20" fill="#b8834f"/>
+      <path fill="none" stroke="#b8834f" stroke-width="9" stroke-linecap="round" d="M342 366c22 2 30-10 28-24"/>
+      <g fill="#1c1b22"><ellipse cx="312" cy="318" rx="2.6" ry="3.4"/><ellipse cx="328" cy="318" rx="2.6" ry="3.4"/></g>
+    </g>
+  </g>
+</svg>

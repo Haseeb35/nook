@@ -29,6 +29,35 @@
   font-display: swap;
 }
 
+/* --- Registered tokens ----------------------------------------------------
+   Registering the six colours and the light levels lets the browser animate
+   them, so a change of time of day crossfades the whole room. Browsers
+   without @property simply switch. */
+@property --wall  { syntax: "<color>"; inherits: true; initial-value: #2b2a33; }
+@property --wood  { syntax: "<color>"; inherits: true; initial-value: #7a5240; }
+@property --lamp  { syntax: "<color>"; inherits: true; initial-value: #f2c57c; }
+@property --rain  { syntax: "<color>"; inherits: true; initial-value: #5c7a99; }
+@property --plant { syntax: "<color>"; inherits: true; initial-value: #4f6b4a; }
+@property --paper { syntax: "<color>"; inherits: true; initial-value: #ede3d1; }
+@property --daylight    { syntax: "<number>"; inherits: true; initial-value: 0.12; }
+@property --lamp-on     { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --city-lights { syntax: "<number>"; inherits: true; initial-value: 0.75; }
+@property --sky-lift    { syntax: "<percentage>"; inherits: true; initial-value: 10%; }
+
+/* The page's own lighting change: slow, eased, never a jump. */
+html {
+  transition:
+    --wall 2.4s var(--ease-out, ease-out),
+    --wood 2.4s var(--ease-out, ease-out),
+    --lamp 2.4s var(--ease-out, ease-out),
+    --rain 2.4s var(--ease-out, ease-out),
+    --plant 2.4s var(--ease-out, ease-out),
+    --paper 2.4s var(--ease-out, ease-out),
+    --daylight 2.4s var(--ease-out, ease-out),
+    --city-lights 2.4s var(--ease-out, ease-out),
+    --sky-lift 2.4s var(--ease-out, ease-out);
+}
+
 /* --- Base palette: evening is the reference state ------------------------ */
 :root,
 [data-time="evening"] {
