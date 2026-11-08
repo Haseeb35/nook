@@ -32,13 +32,13 @@ MAX_LIMIT_DB=10                     # most peak reduction allowed to reach the t
 # length a whole number of bars and keep the crossfade tiny.
 # Starts below were chosen by measuring each recording for the steadiest
 # stretch (least loudness wobble, fewest spikes); cafe.wav has only ~16 s of
-# usable audio between digital silence, and the clink is one of a series.
+# usable audio between digital silence.
 SOUNDS="
 rain      loop  285      30        2            2         -
 cafe      loop  2.2      14        2            1         -
 fire      loop  1        30        2            2         -26
 radio     loop  0        24        0.03         2         -
-clink     shot  13.25    1.4       0            1         -
+clink     shot  0        2         0            1         -
 logpop    shot  0        4         0            1         -
 page      shot  0        3         0            1         -
 chime     shot  0        7         0            1         -20

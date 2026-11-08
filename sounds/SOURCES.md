@@ -21,6 +21,10 @@ or recorded by the author. No synthesised noise, no CC-BY-NC, no
 
 CC0 doesn't require credit, but we give it anyway.
 
+Each license below was checked on the sound's own Freesound page, not taken
+from the search filter. Sounds under any other license are not used, even
+when the license would allow it with credit.
+
 ---
 
 ## Loops
@@ -39,7 +43,7 @@ Plays from the window. The main sound of the room, so it matters most.
 
 | URL | Author | License | Notes (good stretch, start time) |
 |-----|--------|---------|----------------------------------|
-|     |        |         |                                  |
+| [freesound.org/s/856405](https://freesound.org/s/856405/) “20260531 Raining in Bangkok 01” | kijjaz | CC0 1.0 | 6 min, 48 kHz/24-bit stereo. Loop taken from 4:45 (steadiest 30 s). |
 
 ### Café → `sounds/raw/cafe.*`
 
@@ -56,7 +60,7 @@ Plays from the mug.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| [freesound.org/s/380202](https://freesound.org/s/380202/) “Cafe Ambience Day - 1” | lunchmoney | CC0 1.0 | 21 s mono, ~16 s usable between digital silence; 14 s loop. A longer CC0 café recording would repeat less. |
 
 ### Fire → `sounds/raw/fire.*`
 
@@ -73,7 +77,7 @@ Plays from the stove.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| [freesound.org/s/81801](https://freesound.org/s/81801/) “Fire in Fireplace, Close Up, Reverberant 2” | silencyo | CC0 1.0 | 94 s stereo. Pops limited ~7 dB to sit with the other sounds. |
 
 ### Radio (lo-fi music) → `sounds/raw/radio.*`
 
@@ -112,7 +116,7 @@ recorded in a quiet room.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| — | — | — | **Needed.** The first download, “clinks2” by Halleck ([4099](https://freesound.org/s/4099/)), is **CC-BY 4.0, not CC0**, so it is not used. CC0 candidates (checked): [Cup clink by vicleb](https://freesound.org/s/712856/) · [TeaCup44 by ahill86](https://freesound.org/s/206171/) |
 
 ### Log pop (fire) → `sounds/raw/logpop.*`
 
@@ -124,7 +128,7 @@ recorded in a quiet room.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| — | — | — | **Needed.** “Hard pop” by juskiddink ([108616](https://freesound.org/s/108616/)) is **CC-BY 4.0, not CC0**, so it is not used. CC0 candidates (checked): [Pinewood fire pops by YouMightLikeThis](https://freesound.org/s/785057/) · [fire crackles by florianreichelt](https://freesound.org/s/563766/) |
 
 ### Page turn (rain) → `sounds/raw/page.*`
 
@@ -135,7 +139,7 @@ recorded in a quiet room.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| [freesound.org/s/677130](https://freesound.org/s/677130/) “Paging through book” | Aurelon | CC0 1.0 | First 3 s. |
 
 ---
 
@@ -154,7 +158,7 @@ kalimba, never a beep.
 
 | URL | Author | License | Notes |
 |-----|--------|---------|-------|
-|     |        |         |       |
+| — | — | — | **Needed.** “Chime_01” by Andromadax24 ([186719](https://freesound.org/s/186719/)) is **CC-BY 4.0, not CC0**, so it is not used. CC0 candidates (checked): [Kalimba by PanPiper5](https://freesound.org/s/659909/) · [Little bell by NikoletB](https://freesound.org/s/846674/) |
 
 ---
 

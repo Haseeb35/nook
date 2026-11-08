@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "sounds": {
+    "rain": { "kind": "loop", "loopStart": 0.5, "loopEnd": 30.5 },
+    "cafe": { "kind": "loop", "loopStart": 0.5, "loopEnd": 14.5 },
+    "fire": { "kind": "loop", "loopStart": 0.5, "loopEnd": 30.5 },
+    "page": { "kind": "shot" }
+  }
+}
