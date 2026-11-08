@@ -6,7 +6,7 @@
 // files are cached the first time they are played (only the format this
 // browser uses). Bump VERSION to drop old caches on a release.
 
-const VERSION = 'nook-v1';
+const VERSION = 'nook-v2';
 
 const SHELL = [
   './',
@@ -57,14 +57,17 @@ self.addEventListener('fetch', event => {
 
   event.respondWith((async () => {
     const cache = await caches.open(VERSION);
-    const isPage = request.mode === 'navigate';
+    // Only the app's own address is the app. Other pages on the same site
+    // (docs/room-preview.html, say) are cached as themselves.
+    const scope = new URL(self.registration.scope).pathname;
+    const isApp = request.mode === 'navigate' && (url.pathname === scope || url.pathname === `${scope}index.html`);
     // ?time=night and friends are the same page.
-    const cached = await cache.match(isPage ? 'index.html' : request, { ignoreSearch: isPage });
+    const cached = await cache.match(isApp ? 'index.html' : request, { ignoreSearch: isApp });
 
     const network = fetch(request)
       .then(response => {
         if (response.ok && response.type === 'basic') {
-          cache.put(isPage ? 'index.html' : request, response.clone());
+          cache.put(isApp ? 'index.html' : request, response.clone());
         }
         return response;
       })
