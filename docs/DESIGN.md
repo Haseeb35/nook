@@ -295,3 +295,30 @@ copies it into the SVG `viewBox`, so the buttons and the drawing always agree.
   or just `Nook` when nothing is running.
 - **Tests**: `node --test tests/` runs the engine against a fake clock.
 
+---
+
+## 8. Sound
+
+- **Sources**: real CC0 field recordings only, listed with credits in
+  [`sounds/SOURCES.md`](../sounds/SOURCES.md). Prepared by
+  `scripts/prepare-sounds.sh`: 60 Hz high-pass, an equal-power crossfade at the
+  loop seam, linear levelling to −23 LUFS (fire −26, chime −20; a look-ahead
+  limiter tames fire pops), Opus + AAC at 96 kbps, each file under 400 KB.
+- **Graph**: one gain per sound into a master gain. Loops are
+  `AudioBufferSourceNode`s looping between `loopStart`/`loopEnd` from
+  `sounds/manifest.json`; the files carry half a second of wrap-around padding
+  each side, so encoder priming never lands in the part that repeats. Each loop
+  starts at a random point.
+- **Levels**: slider → gain on a squared curve; every change is a
+  `setTargetAtTime` ramp (≈1 s for on/off, 50 ms for slider moves). A loop that
+  has faded out is stopped after 4 s.
+- **Life**: while a sound plays, one quiet layer drops in every 20–90 s:
+  a page turn with the rain, a cup clink in the café, a log pop in the stove.
+  Each plays through its parent's gain (it follows that volume and fade),
+  slightly detuned (±6%) and panned.
+- **Autoplay**: nothing is created before the first click or key press; the
+  master gain fades in from silence. A sound without a file in the manifest
+  quietly leaves the room (its object becomes scenery, its shelf row goes).
+- **Chime**: a single soft bell when a session ends on its own (not on skip,
+  not for one that ended while the page was closed).
+

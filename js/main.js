@@ -3,6 +3,7 @@ import { read, write } from './storage.js';
 import { createRoom, formatTime, SOUNDS } from './room.js';
 import { createTimer, normaliseSettings } from './timer.js';
 import { createSettings } from './settings.js';
+import { createAudio, loadManifest } from './audio.js';
 
 const DEFAULT_VOLUME = { rain: 0.6, cafe: 0.4, fire: 0.5, radio: 0.45 };
 const TIMES = ['morning', 'afternoon', 'evening', 'night'];
@@ -19,6 +20,16 @@ const sounds = Object.fromEntries(SOUNDS.map(name => {
   const v = Number(savedVolumes[name]);
   return [name, { on: false, vol: Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : DEFAULT_VOLUME[name] }];
 }));
+
+const audio = createAudio({
+  // A file that fails to load or decode: switch it off and take it away.
+  onUnavailable(name) {
+    if (!SOUNDS.includes(name)) return;
+    sounds[name].on = false;
+    room.setSoundAvailable(name, false);
+    renderSound(name);
+  },
+});
 
 let saveTimer = 0;
 function saveVolumes() {
@@ -72,10 +83,12 @@ let settings = normaliseSettings(read('settings', null));
 
 const room = createRoom({
   onToggleSound(name) {
+    audio.unlock(); // inside the click: browsers only allow sound to start here
     sounds[name].on = !sounds[name].on;
     renderSound(name);
   },
   onVolume(name, vol) {
+    audio.unlock();
     const sound = sounds[name];
     sound.vol = vol;
     if (!sound.on && vol > 0) sound.on = true; // reaching for the dial means "play"
@@ -99,6 +112,7 @@ const room = createRoom({
 });
 
 function renderSound(name) {
+  audio.setSound(name, sounds[name]);
   room.renderSound(name, sounds[name]);
   room.renderDrawerSummary(SOUNDS.filter(n => sounds[n].on));
   render(timer.snapshot());
@@ -113,11 +127,12 @@ const timer = createTimer({
     render(snap);
   },
   onTick: render,
-  onComplete({ from, to, late }) {
+  onComplete({ from, to, late, skipped }) {
+    if (!late && !skipped) audio.playChime();
     lastEvent = late ? 'late' : from !== 'focus' && to === 'focus' ? 'back' : null;
     if (to === 'focus') room.setCat('asleep');
     else room.setCat('awake', { stretch: !late });
-    // The chime (phase 4) and the browser notification (phase 5) hook in here.
+    // The browser notification (phase 5) hooks in here.
     render(timer.snapshot());
   },
 });
@@ -161,15 +176,21 @@ document.addEventListener('keydown', event => {
   }
 });
 
+// The first click or key press unlocks audio, so the chime can play later
+// even if no sound was switched on. (Not pointerdown: on touch screens a
+// finger going down doesn't yet count as a gesture that may start audio.)
+document.addEventListener('click', () => audio.unlock(), { once: true, capture: true });
+document.addEventListener('keydown', () => audio.unlock(), { once: true, capture: true });
+
 // The first touch of anything retires the first-visit hint.
-function retireHint() {
+function firstGesture() {
   if (!firstVisit) return;
   firstVisit = false;
   write('visited', true);
   render(timer.snapshot());
 }
-document.addEventListener('pointerdown', retireHint, { once: true, capture: true });
-document.addEventListener('keydown', retireHint, { once: true, capture: true });
+document.addEventListener('pointerdown', firstGesture, { once: true, capture: true });
+document.addEventListener('keydown', firstGesture, { once: true, capture: true });
 
 // Background tabs throttle timers; look at the real clock when we come back.
 document.addEventListener('visibilitychange', () => {
@@ -185,3 +206,9 @@ room.setTask(read('task', '') ?? '');
 room.setCat(timer.snapshot().phase === 'focus' ? 'asleep' : 'awake');
 render(timer.snapshot());
 timer.resync(); // a session that ended while the page was closed completes now
+
+// Sounds without a prepared file (see sounds/SOURCES.md) leave the room.
+loadManifest().then(manifest => {
+  audio.setManifest(manifest);
+  for (const name of SOUNDS) room.setSoundAvailable(name, Boolean(manifest[name]));
+});

@@ -264,7 +264,15 @@ export function createRoom({ onToggleSound, onVolume, onTask, onLamp, onClock, o
     catObj.querySelector('.obj-btn').setAttribute('aria-label', `The cat, ${word}`);
   }
 
-  return { renderSound, renderDrawerSummary, renderLamp, setTask, renderClock, setStatus, setCat, closeTags };
+  // A sound with no file: its object becomes plain scenery, its shelf row goes.
+  function setSoundAvailable(name, available) {
+    const obj = objectByName.get(OBJECT_FOR[name]);
+    obj.hidden = !available;
+    drawer.querySelector(`.shelf-row[data-sound="${name}"]`).hidden = !available;
+    if (!available) drawing(OBJECT_FOR[name]).dataset.on = 'false';
+  }
+
+  return { renderSound, renderDrawerSummary, renderLamp, setTask, renderClock, setStatus, setCat, closeTags, setSoundAvailable };
 }
 
 const PHASE_NAMES = { focus: 'Focus', short: 'Short break', long: 'Long break' };

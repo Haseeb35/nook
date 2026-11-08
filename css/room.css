@@ -155,6 +155,52 @@
   91% { rotate: 3deg; }
 }
 
+/* --- Motion while a sound plays (none under reduced motion) --------------
+   Rain streaks slide down the glass, steam drifts up and thins out, flames
+   lick. Each element fades at the ends of its travel, so the restart is
+   never seen. Slow, physical, no bounce. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-on="true"] .streak {
+    animation: streak-fall 1.3s linear infinite;
+  }
+  [data-on="true"] .streak:nth-child(3n)   { animation-duration: 1.05s; }
+  [data-on="true"] .streak:nth-child(3n+1) { animation-duration: 1.6s; }
+  [data-on="true"] .streak:nth-child(4n)   { animation-delay: -0.4s; }
+  [data-on="true"] .streak:nth-child(4n+1) { animation-delay: -0.9s; }
+  [data-on="true"] .streak:nth-child(4n+2) { animation-delay: -0.2s; }
+  [data-on="true"] .streak:nth-child(5n)   { animation-delay: -1.2s; }
+
+  [data-on="true"] .steam path {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: steam-rise 6s var(--ease-soft) infinite;
+  }
+  [data-on="true"] .steam path:nth-child(2) { animation-delay: -3s; animation-duration: 6.8s; }
+
+  [data-on="true"] .fire path {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: flame-lick 0.9s var(--ease-soft) infinite alternate;
+  }
+  [data-on="true"] .fire path + path { animation-duration: 0.7s; animation-delay: -0.3s; }
+}
+
+@keyframes streak-fall {
+  0%   { transform: translate(2px, -28px); opacity: 0; }
+  20%  { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { transform: translate(-5px, 34px); opacity: 0; }
+}
+@keyframes steam-rise {
+  0%   { transform: translateY(8px) scaleX(0.9); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(-18px) scaleX(1.15); opacity: 0; }
+}
+@keyframes flame-lick {
+  from { transform: scaleY(0.94) skewX(-1.5deg); }
+  to   { transform: scaleY(1.04) skewX(1.5deg); }
+}
+
 /* Hover/focus: the object catches a little more light. */
 .room [data-hover] { filter: brightness(1.12); }
 .room g[id], .room [data-object] { transition: filter var(--dur-quick) var(--ease-out); }

@@ -25,19 +25,23 @@ RATE=48000
 MARGIN=0.5                          # seconds of wrap-around padding per side
 MAX_BYTES=409600                    # ~400 KB per file
 PEAK_CEILING=-1                     # dBFS: never raise a sound past this
+MAX_LIMIT_DB=10                     # most peak reduction allowed to reach the target
 
-# name    kind  start(s) length(s) crossfade(s) channels
+# name    kind  start(s) length(s) crossfade(s) channels  LUFS ("-" = default)
 # Edit start/length after listening to the previews. For music, make
 # length a whole number of bars and keep the crossfade tiny.
+# Starts below were chosen by measuring each recording for the steadiest
+# stretch (least loudness wobble, fewest spikes); cafe.wav has only ~16 s of
+# usable audio between digital silence, and the clink is one of a series.
 SOUNDS="
-rain      loop  5        30        2            2
-cafe      loop  5        30        2            2
-fire      loop  5        30        2            2
-radio     loop  0        24        0.03         2
-clink     shot  0        3         0            1
-logpop    shot  0        4         0            1
-page      shot  0        3         0            1
-chime     shot  0        7         0            1
+rain      loop  285      30        2            2         -
+cafe      loop  2.2      14        2            1         -
+fire      loop  1        30        2            2         -26
+radio     loop  0        24        0.03         2         -
+clink     shot  13.25    1.4       0            1         -
+logpop    shot  0        4         0            1         -
+page      shot  0        3         0            1         -
+chime     shot  0        7         0            1         -20
 "
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -92,9 +96,11 @@ loudness() {
     | awk '/^ *I: / { i = $2 } /^ *Peak: / { p = $2 } END { print i, p }'
 }
 
-# Gain (dB) to reach a loudness target without pushing peaks past the ceiling.
+# Prints "<gain dB> <limit 0|1>": the gain that reaches the loudness target,
+# and whether a peak limiter is needed to keep transients (log pops, clinks)
+# under the ceiling. Past MAX_LIMIT_DB of limiting, the gain is held back.
 gain_for() {
-  local file="$1" target="$2" measured lufs peak gain
+  local file="$1" target="$2" measured lufs peak gain over limit=0
   measured="$(loudness "$file")"
   lufs="${measured% *}"
   peak="${measured#* }"
@@ -104,15 +110,30 @@ gain_for() {
   else
     gain="$(calc "$target - ($lufs)")"
   fi
-  if awk "BEGIN { exit !($peak + $gain > $PEAK_CEILING) }"; then
-    gain="$(calc "$PEAK_CEILING - ($peak)")"
-    echo "  note: held back to keep peaks under $PEAK_CEILING dBFS" >&2
+  over="$(calc "$peak + $gain - ($PEAK_CEILING)")"
+  if awk "BEGIN { exit !($over > $MAX_LIMIT_DB) }"; then
+    gain="$(calc "$gain - ($over - $MAX_LIMIT_DB)")"
+    echo "  note: peaks too far above the rest; held back $(num "$over - $MAX_LIMIT_DB") dB" >&2
+    limit=1
+  elif awk "BEGIN { exit !($over > 0) }"; then
+    echo "  note: limiting peaks by up to $(num "$over") dB to reach the target" >&2
+    limit=1
   fi
-  echo "$gain"
+  echo "$gain $limit"
+}
+
+# Volume, then (if needed) a look-ahead peak limiter at the ceiling.
+# level=disabled stops alimiter from re-normalising; latency=1 removes its delay.
+level_chain() { # <gain> <limit>
+  local chain="volume=${1}dB"
+  if [ "$2" = 1 ]; then
+    chain="$chain,alimiter=limit=$(calc "10 ^ (($PEAK_CEILING - 0.5) / 20)"):attack=1:release=80:level=disabled:latency=1"
+  fi
+  echo "$chain"
 }
 
 encode() { # <input wav> <output base name> <channels>
-  ff -i "$1" -ac "$3" -ar "$RATE" -c:a libopus -b:a "$BITRATE" -vbr on -application audio "$OUT/$2.ogg" || return 1
+  ff -i "$1" -ac "$3" -ar "$RATE" -c:a libopus -b:a "$BITRATE" -vbr constrained -application audio "$OUT/$2.ogg" || return 1
   ff -i "$1" -ac "$3" -ar "$RATE" -c:a "$AAC" -b:a "$BITRATE" -movflags +faststart "$OUT/$2.m4a" || return 1
 }
 
@@ -120,7 +141,7 @@ size_of() { wc -c < "$1" | tr -d ' '; }
 
 # --- Loops ----------------------------------------------------------------------
 make_loop() {
-  local name="$1" src="$2" start="$3" len="$4" xf="$5" ch="$6"
+  local name="$1" src="$2" start="$3" len="$4" xf="$5" ch="$6" target="$7"
   local have need
   have="$(duration "$src")"
   need="$(calc "$start + $len + $xf")"
@@ -146,25 +167,27 @@ make_loop() {
     [seam][body]concat=n=2:v=0:a=1[out]" \
     -map "[out]" -c:a pcm_f32le "$WORK/$name-loop.wav" || return 1
 
-  # 3. One gain for the whole loop (linear, so the seam is untouched).
-  local gain
-  gain="$(gain_for "$WORK/$name-loop.wav" "$TARGET_LUFS")" || return 1
+  # 3. Level the loop. The gain is linear; a limiter (when needed) runs over
+  #    three back-to-back copies so it is in the same state on both sides
+  #    of the seam.
+  local measured gain limit chain pre
+  measured="$(gain_for "$WORK/$name-loop.wav" "$target")" || return 1
+  gain="${measured% *}"
+  limit="${measured#* }"
+  chain="$(level_chain "$gain" "$limit")"
 
-  # 4. Wrap-around margins: [last MARGIN s][loop][first MARGIN s].
-  local pre
+  # 4. Keep the middle copy plus wrap-around margins:
+  #    [last MARGIN s][loop][first MARGIN s].
   pre="$(calc "$len - $MARGIN")"
-  ff -i "$WORK/$name-loop.wav" -filter_complex "
-    [0:a]asplit=3[x][y][z];
-    [x]atrim=start=$pre,asetpts=PTS-STARTPTS[before];
-    [z]atrim=end=$MARGIN,asetpts=PTS-STARTPTS[after];
-    [before][y][after]concat=n=3:v=0:a=1,volume=${gain}dB[out]" \
-    -map "[out]" -c:a pcm_f32le "$WORK/$name-final.wav" || return 1
+  ff -stream_loop 2 -i "$WORK/$name-loop.wav" \
+    -af "$chain,atrim=start=$pre:duration=$(calc "$len + 2 * $MARGIN"),asetpts=PTS-STARTPTS" \
+    -c:a pcm_f32le "$WORK/$name-final.wav" || return 1
 
   encode "$WORK/$name-final.wav" "$name" "$ch" || return 1
 
   if [ "$PREVIEW" = 1 ]; then
     mkdir -p "$RAW/preview"
-    ff -stream_loop 2 -i "$WORK/$name-loop.wav" -af "volume=${gain}dB" -c:a pcm_s16le "$RAW/preview/$name-x3.wav"
+    ff -stream_loop 2 -i "$WORK/$name-loop.wav" -af "$chain" -c:a pcm_s16le "$RAW/preview/$name-x3.wav"
   fi
 
   MANIFEST_ENTRIES="$MANIFEST_ENTRIES$(printf '    "%s": { "kind": "loop", "loopStart": %s, "loopEnd": %s }' \
@@ -174,8 +197,7 @@ make_loop() {
 
 # --- One-shots ------------------------------------------------------------------
 make_shot() {
-  local name="$1" src="$2" start="$3" len="$4" ch="$6" target="$TARGET_LUFS"
-  [ "$name" = chime ] && target="$CHIME_LUFS"
+  local name="$1" src="$2" start="$3" len="$4" ch="$6" target="$7"
 
   # Trim silence at both ends, cap the length, fade the last 150 ms.
   ff -i "$src" -af "highpass=f=$HIGHPASS_HZ:poles=2,atrim=start=$start,asetpts=PTS-STARTPTS,
@@ -184,11 +206,12 @@ make_shot() {
     atrim=end=$len,asetpts=PTS-STARTPTS" \
     -ac "$ch" -ar "$RATE" -c:a pcm_f32le "$WORK/$name-trim.wav" || return 1
 
-  local dur fade_at gain
+  local dur fade_at measured
   dur="$(duration "$WORK/$name-trim.wav")"
   fade_at="$(calc "$dur > 0.3 ? $dur - 0.15 : 0")"
-  gain="$(gain_for "$WORK/$name-trim.wav" "$target")" || return 1
-  ff -i "$WORK/$name-trim.wav" -af "afade=t=out:st=$fade_at:d=0.15,volume=${gain}dB" -c:a pcm_f32le "$WORK/$name-final.wav" || return 1
+  measured="$(gain_for "$WORK/$name-trim.wav" "$target")" || return 1
+  ff -i "$WORK/$name-trim.wav" -af "afade=t=out:st=$fade_at:d=0.15,$(level_chain ${measured% *} ${measured#* })" \
+    -c:a pcm_f32le "$WORK/$name-final.wav" || return 1
 
   encode "$WORK/$name-final.wav" "$name" "$ch" || return 1
   MANIFEST_ENTRIES="$MANIFEST_ENTRIES$(printf '    "%s": { "kind": "shot" }' "$name"),
@@ -202,7 +225,7 @@ FAILED=""
 DONE=""
 WARN=0
 
-while read -r name kind start len xf ch; do
+while read -r name kind start len xf ch lufs; do
   [ -z "${name:-}" ] && continue
   if [ -n "$ONLY" ] && ! echo " $ONLY " | grep -q " $name "; then continue; fi
   if ! src="$(find_raw "$name")"; then
@@ -210,10 +233,13 @@ while read -r name kind start len xf ch; do
     continue
   fi
   echo "• $name  ←  ${src#"$ROOT"/}"
+  target="$TARGET_LUFS"
+  if [ "$name" = chime ]; then target="$CHIME_LUFS"; fi
+  if [ -n "${lufs:-}" ] && [ "$lufs" != "-" ]; then target="$lufs"; fi
   if [ "$kind" = loop ]; then
-    make_loop "$name" "$src" "$start" "$len" "$xf" "$ch" || { FAILED="$FAILED $name"; continue; }
+    make_loop "$name" "$src" "$start" "$len" "$xf" "$ch" "$target" || { FAILED="$FAILED $name"; continue; }
   else
-    make_shot "$name" "$src" "$start" "$len" "$xf" "$ch" || { FAILED="$FAILED $name"; continue; }
+    make_shot "$name" "$src" "$start" "$len" "$xf" "$ch" "$target" || { FAILED="$FAILED $name"; continue; }
   fi
   DONE="$DONE $name"
 done <<EOF
