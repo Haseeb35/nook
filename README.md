@@ -1,21 +1,30 @@
-# Nook
+<h1 align="center">Nook</h1>
 
-A Pomodoro timer you sit inside. Nook is a small illustrated room at dusk:
-rain on the window, a mug of something warm, a wood stove, a sleeping cat.
-There are no menus. You focus by touching the room.
+<p align="center">
+  A Pomodoro timer you sit inside.<br>
+  Rain on the window, a mug of something warm, a wood stove, a sleeping cat.<br>
+  There are no menus. You focus by touching the room.
+</p>
 
-![The room in the evening: rain on, kettle warm, fire lit, 18:36 on the clock](docs/images/nook-evening.jpg)
+<p align="center">
+  <a href="https://haseeb35.github.io/nook/">
+    <img src="docs/images/nook-evening.jpg" alt="The room in the evening: rain on, kettle warm, fire lit, 18:36 on the clock" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://haseeb35.github.io/nook/">
+    <img src="docs/images/open-the-room.png" alt="Open the room: haseeb35.github.io/nook" width="320" height="76">
+  </a>
+</p>
+
+<p align="center">
+  <sub>Free · no sign-up · installs as an app · works offline after the first visit</sub>
+</p>
 
 <!-- Demo GIF: record ~10 s of clicking the window, mug and stove, then
      starting the clock, and save it as docs/images/demo.gif. -->
 > **Demo GIF:** coming soon (`docs/images/demo.gif`).
-
-## Live
-
-**[Open Nook →](https://haseeb35.github.io/nook/)** <!-- update if the repo has a different name -->
-
-Works in any modern browser, installs as an app, and keeps working offline
-after the first visit.
 
 ## The room is the interface
 
