@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Nook — the room (SVG scene)
+   Shared by index.html and docs/room-preview.html. No id selectors here:
+   the preview repeats the scene, so objects are styled by class/attribute.
+   ========================================================================== */
+
+.room { display: block; width: 100%; height: 100%; }
+
+/* --- Fills ---------------------------------------------------------------
+   Each class exposes its colour as --c, so a stroked shape (fill="none")
+   reuses the same class for its stroke. */
+.f-wall      { --c: var(--wall); }
+.f-wall-deep { --c: var(--wall-deep); }
+.f-wall-lit  { --c: var(--wall-lit); }
+.f-ink       { --c: var(--ink); }
+.f-iron      { --c: var(--iron); }
+.f-iron-lit  { --c: var(--iron-lit); }
+.f-wood      { --c: var(--wood); }
+.f-wood-dark { --c: var(--wood-dark); }
+.f-wood-lit  { --c: var(--wood-lit); }
+.f-brass     { --c: var(--brass); }
+.f-lamp      { --c: var(--lamp); }
+.f-rain      { --c: var(--rain); }
+.f-plant     { --c: var(--plant); }
+.f-paper     { --c: var(--paper); }
+.f-fur       { --c: var(--fur); }
+.f-note      { --c: var(--note); }
+.f-curtain   { --c: var(--curtain); }
+.f-rug       { --c: var(--rug); }
+.f-grille    { --c: var(--grille); }
+.f-pot       { --c: var(--pot); }
+.f-sky       { --c: var(--sky); }
+.f-city-far  { --c: var(--city-far); }
+.f-city      { --c: var(--city); }
+.f-ember     { --c: var(--ember); }
+
+[class*="f-"] { fill: var(--c); }
+[class*="f-"][fill="none"] { fill: none; stroke: var(--c); }
+
+/* --- Window -------------------------------------------------------------- */
+.city-lights { opacity: var(--city-lights); transition: opacity var(--dur-slow) var(--ease-out); }
+.streak      { stroke: var(--streak); stroke-linecap: round; }
+.drops       { fill: var(--streak); opacity: 0.55; }
+.glass-sheen { opacity: 0.05; }
+
+/* --- Light: flat shapes at low opacity, scaled by tokens ----------------- */
+.daylight  { fill: var(--paper); opacity: calc(var(--daylight) * 0.5); }
+.lamp-halo { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.035); }
+.lamp-cone { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.13); }
+.lamp-pool { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.4); }
+.bulb      { fill: var(--lamp);  opacity: calc(0.15 + var(--lamp-on) * 0.85); }
+
+/* The lamp warms up: bulb first, then the light it throws. */
+.bulb { transition: opacity var(--dur-quick) var(--ease-out); }
+.lamp-halo, .lamp-cone, .lamp-pool {
+  transition: opacity var(--dur-slow) var(--ease-out) 120ms;
+}
+
+/* --- Stove: --fire follows the crackle volume ---------------------------- */
+.fire       { opacity: calc(0.25 + var(--fire) * 0.75); transition: opacity var(--dur-slow) var(--ease-out); }
+.fire-floor { fill: var(--lamp); opacity: calc(var(--fire) * 0.12); transition: opacity var(--dur-slow) var(--ease-out); }
+
+/* --- Mug ----------------------------------------------------------------- */
+.steam { stroke: var(--paper); opacity: 0.32; transition: opacity var(--dur-slow) var(--ease-out); }
+
+/* --- Type inside the scene ----------------------------------------------- */
+.clock-digits {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  fill: var(--lamp);
+}
+.note-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  fill: var(--ink);
+  opacity: 0.7;
+}
+.note-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 18;
+  font-size: 18px;
+  fill: var(--ink);
+}
+.note-text--small { font-size: 15px; }
+.note-text--empty { opacity: 0.5; }
+
+.grain { opacity: 0.14; mix-blend-mode: overlay; pointer-events: none; }
+
+/* ==========================================================================
+   Object states (set by js/room.js on the object's <g>)
+   data-on="false"  the sound is off      --vol  0–1 volume
+   data-hover       pointer or focus is on the object's button
+   With no data-on (the preview), objects show their "on" look.
+   ========================================================================== */
+
+.rain-tier { transition: opacity var(--dur-slow) var(--ease-out); }
+[data-on="true"] .rain-tier[data-tier="2"] { opacity: clamp(0, (var(--vol, 1) - 0.15) * 3, 1); }
+[data-on="true"] .rain-tier[data-tier="3"] { opacity: clamp(0, (var(--vol, 1) - 0.5) * 3, 1); }
+[data-on="false"] .rain-tier[data-tier="2"],
+[data-on="false"] .rain-tier[data-tier="3"] { opacity: 0; }
+
+[data-on="false"] .steam { opacity: 0; }
+[data-on="true"]  .steam { opacity: calc(0.12 + var(--vol, 1) * 0.28); }
+
+[data-on="false"].stove-group { --fire: 0.1; }
+[data-on="true"].stove-group  { --fire: calc(0.3 + var(--vol, 1) * 0.7); }
+
+.radio-dial { transition: fill var(--dur-calm) var(--ease-out); }
+[data-on="true"] .radio-dial { fill: var(--lamp); }
+.radio-needle, .radio-knob {
+  transform-box: view-box;
+  transition: transform var(--dur-calm) var(--ease-out);
+}
+.radio-needle { transform: translateX(calc((var(--vol, 0.5) - 0.5) * 44px)); }
+.radio-knob {
+  transform-origin: 1183px 606px;
+  transform: rotate(calc(-130deg + var(--vol, 0.5) * 260deg));
+}
+
+/* Hover/focus: the object catches a little more light. */
+.room [data-hover] { filter: brightness(1.12); }
+.room g[id], .room [data-object] { transition: filter var(--dur-quick) var(--ease-out); }
+
+/* Reduced motion: opacity fades stay (they are light, not movement);
+   anything that travels or turns snaps into place. */
+@media (prefers-reduced-motion: reduce) {
+  .radio-needle, .radio-knob { transition: none; }
+}

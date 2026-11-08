@@ -237,11 +237,16 @@ plant, shelf, desk, floor, light layers, grain.
 
 ### Phone crop
 
-Below 720 px wide the same SVG uses `viewBox="150 70 800 800"`, a square
-around the window, desk, cat, mug, clock, note and lamp. The radio and stove
-leave the frame. Their controls (and the rain/café sliders) move into a bottom
-drawer drawn as a wooden shelf. Every touch target is at least 44 × 44 px, and
-nothing scrolls horizontally at 360 px.
+Below 720 px wide, or on any screen narrower than 13:10, the same SVG uses
+`viewBox="172 40 624 960"`: a portrait crop around the window, note, cat, mug
+and clock. The lamp's light still falls in from the right edge. The scene sits
+above a bottom drawer drawn as a wooden shelf, which holds all four sound
+controls (the radio and stove leave the frame). The band of wall above the
+scene is where the large timer readout and the status line live. Every touch
+target is at least 44 × 44 px, and nothing scrolls horizontally at 360 px.
+
+The crop lives in CSS only (`--vb-*` on `.scene` in `css/ui.css`); `js/room.js`
+copies it into the SVG `viewBox`, so the buttons and the drawing always agree.
 
 ---
 

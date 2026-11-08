@@ -1,0 +1,360 @@
+/* ==========================================================================
+   Nook — interface
+   The room is the interface: transparent buttons sit exactly over the
+   objects in the SVG, and small tags carry labels and sliders.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--wall);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-size: var(--step-0);
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-slow) var(--ease-out);
+}
+
+button, input { font: inherit; color: inherit; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* --- Stage and scene ------------------------------------------------------
+   The scene keeps the aspect of its viewBox, so a button placed in viewBox
+   units lands exactly on its object. On wide screens it covers the window;
+   below the breakpoint it switches to a portrait crop (see room.js, which
+   copies --vb-* into the SVG viewBox). */
+:root { --handle-h: 0px; }
+
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+.scene {
+  --vb-x: 0;
+  --vb-y: 0;
+  --vb-w: 1600;
+  --vb-h: 1000;
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, 100cqh * var(--vb-w) / var(--vb-h));
+  aspect-ratio: var(--vb-w) / var(--vb-h);
+  translate: -50% -50%;
+  animation: room-in var(--dur-slow) var(--ease-out) both;
+}
+
+.scene > .room { position: absolute; inset: 0; }
+
+@keyframes room-in { from { opacity: 0; } }
+
+/* Grain over the whole page, so the wall around a cropped scene matches. */
+.grain-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* --- Objects -------------------------------------------------------------- */
+.obj {
+  position: absolute;
+  left:   calc((var(--x) - var(--vb-x)) / var(--vb-w) * 100%);
+  top:    calc((var(--y) - var(--vb-y)) / var(--vb-h) * 100%);
+  width:  calc(var(--w) / var(--vb-w) * 100%);
+  height: calc(var(--h) / var(--vb-h) * 100%);
+}
+
+/* Bounds in viewBox units (x, y, w, h). Later entries sit on top. */
+.obj[data-obj="window"] { --x: 150;  --y: 120; --w: 450; --h: 440; }
+.obj[data-obj="note"]   { --x: 640;  --y: 302; --w: 148; --h: 132; }
+.obj[data-obj="stove"]  { --x: 1284; --y: 540; --w: 232; --h: 346; }
+.obj[data-obj="radio"]  { --x: 1030; --y: 500; --w: 200; --h: 144; }
+.obj[data-obj="lamp"]   { --x: 800;  --y: 396; --w: 146; --h: 246; }
+.obj[data-obj="clock"]  { --x: 612;  --y: 552; --w: 184; --h: 92; }
+.obj[data-obj="mug"]    { --x: 490;  --y: 500; --w: 96;  --h: 144; }
+.obj[data-obj="cat"]    { --x: 256;  --y: 548; --w: 210; --h: 96; }
+
+.obj:hover, .obj:has(:focus-visible), .obj[data-active] { z-index: 5; }
+
+.obj-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus: on-palette, visible on every wall colour (≥ 4:1, see DESIGN.md). */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.obj-btn:focus-visible { outline-offset: 6px; }
+
+/* --- Tags: label (+ slider) beside an object ------------------------------ */
+.tag {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  padding-bottom: 10px;          /* hover bridge between object and tag */
+  translate: -50% 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-quick) var(--ease-out),
+    translate var(--dur-quick) var(--ease-out),
+    visibility 0s linear var(--dur-quick);
+}
+
+/* Open on hover, on keyboard focus (not on a mouse click), or after a tap. */
+@media (hover: hover) {
+  .obj:hover .tag { opacity: 1; visibility: visible; pointer-events: auto; translate: -50% 0; transition-delay: 0s; }
+}
+.obj:has(:focus-visible) .tag,
+.obj[data-active] .tag {
+  opacity: 1; visibility: visible; pointer-events: auto; translate: -50% 0; transition-delay: 0s;
+}
+
+.tag-inner {
+  display: grid;
+  gap: 2px;
+  min-width: 168px;
+  padding: 8px 12px 6px;
+  border: 1px solid color-mix(in oklab, var(--paper), transparent 84%);
+  border-radius: 2px;
+  background: var(--ink);
+  white-space: nowrap;
+}
+
+.tag-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: var(--step--1);
+  line-height: 1.3;
+}
+.tag-state { color: var(--text-muted); font-style: italic; }
+
+.tag-input {
+  width: 220px;
+  margin: 6px 0 4px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--paper), transparent 60%);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font-style: italic;
+  font-size: 16px;           /* 16px keeps iOS from zooming on focus */
+}
+.tag-input::placeholder { color: var(--text-muted); opacity: 1; }
+.tag-input:focus-visible { outline: none; border-bottom-color: var(--focus); }
+
+/* --- Sliders -------------------------------------------------------------- */
+.slider {
+  --pct: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(to right, var(--lamp) var(--pct), color-mix(in oklab, var(--paper), transparent 62%) var(--pct));
+}
+.slider::-moz-range-track {
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--paper), transparent 62%);
+}
+.slider::-moz-range-progress { height: 2px; background: var(--lamp); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -7px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lamp);
+  transition: scale var(--dur-quick) var(--ease-out);
+}
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lamp);
+}
+.slider:active::-webkit-slider-thumb { scale: 1.15; }
+.slider:focus-visible { outline-offset: 2px; border-radius: 2px; }
+
+/* --- Shelf drawer (narrow layout only) ------------------------------------ */
+.drawer { display: none; }
+
+/* ==========================================================================
+   Narrow / portrait layout
+   Square-ish crop around the window and desk, anchored above the drawer.
+   The radio and stove leave the frame; all sound controls live on the shelf.
+   Keep this query in sync with NARROW_QUERY in js/room.js.
+   ========================================================================== */
+@media (max-width: 720px), (max-aspect-ratio: 13/10) {
+  :root { --handle-h: calc(60px + env(safe-area-inset-bottom)); }
+
+  .scene {
+    --vb-x: 172;
+    --vb-y: 40;
+    --vb-w: 624;
+    --vb-h: 960;
+
+    top: auto;
+    bottom: var(--handle-h);
+    width: min(100cqw, (100cqh - var(--handle-h)) * var(--vb-w) / var(--vb-h));
+    translate: -50% 0;
+  }
+
+  .obj[data-obj="stove"],
+  .obj[data-obj="radio"],
+  .obj[data-obj="lamp"] { display: none; }
+
+  /* Objects near the right edge open their tags leftwards. */
+  .obj[data-obj="note"] .tag,
+  .obj[data-obj="clock"] .tag { left: auto; right: 4px; translate: 0 4px; }
+  .obj[data-obj="note"]:is(:hover, :has(:focus-visible), [data-active]) .tag,
+  .obj[data-obj="clock"]:is(:hover, :has(:focus-visible), [data-active]) .tag { translate: 0 0; }
+
+  /* Sliders live on the shelf here; tags keep just the label. */
+  .obj .slider { display: none; }
+  .tag-inner { min-width: 0; }
+
+  .drawer {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    translate: 0 calc(100% - var(--handle-h));
+    transition: translate var(--dur-calm) var(--ease-out);
+    background: var(--wood-dark);
+    color: var(--text);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .drawer[data-open="true"] { translate: 0 0; }
+
+  /* The lip of the shelf: a lit wooden edge with a shadow under it. */
+  .drawer::before {
+    content: "";
+    display: block;
+    height: 8px;
+    background: var(--wood-lit);
+    box-shadow: 0 3px 0 var(--ink);
+  }
+
+  .drawer-handle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 52px;
+    padding: 6px 20px 0;
+    border: 0;
+    background: transparent;
+    font-size: var(--step-0);
+    text-align: left;
+    cursor: pointer;
+  }
+  .drawer-summary { color: var(--text-muted); font-style: italic; font-size: var(--step--1); }
+
+  /* A small drawn chevron: two strokes, no icon font. */
+  .drawer-chevron {
+    width: 10px;
+    height: 10px;
+    margin-left: 12px;
+    border-left: 2px solid currentColor;
+    border-top: 2px solid currentColor;
+    rotate: 45deg;
+    translate: 0 3px;
+    transition: rotate var(--dur-calm) var(--ease-out), translate var(--dur-calm) var(--ease-out);
+  }
+  .drawer[data-open="true"] .drawer-chevron { rotate: 225deg; translate: 0 -3px; }
+  .drawer-handle-end { display: flex; align-items: center; }
+
+  .drawer-body {
+    display: grid;
+    padding: 4px 20px 18px;
+  }
+  .drawer[data-open="false"] .drawer-body { visibility: hidden; transition: visibility 0s linear var(--dur-calm); }
+
+  .shelf-row {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    border-bottom: 4px solid var(--wood);
+    box-shadow: 0 2px 0 var(--ink);
+    margin-bottom: 6px;
+  }
+  .shelf-row:last-child { margin-bottom: 0; }
+
+  .shelf-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+  .shelf-row .slider { height: 44px; }
+}
+
+/* An on/off pip, drawn: hollow when off, lamp-lit when on. */
+.pip {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  transition: background-color var(--dur-quick) var(--ease-out), border-color var(--dur-quick) var(--ease-out);
+}
+[aria-pressed="true"] > .pip { background: var(--lamp); border-color: var(--lamp); }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { animation-duration: var(--dur-quick); }
+  .tag { transition-property: opacity, visibility; }
+  .drawer { transition: none; }
+  .drawer-chevron { transition: none; }
+}

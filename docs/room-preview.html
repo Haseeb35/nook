@@ -7,6 +7,7 @@
   <title>Nook room preview</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/room.css">
   <link rel="stylesheet" href="preview.css">
   <script type="module" src="preview.js"></script>
 </head>
@@ -51,7 +52,7 @@
     <h2>Phone crop</h2>
     <p>Below 720px the scene is cropped around the window and desk. The radio and stove leave the frame and their controls move to the shelf drawer.</p>
     <figure class="panel panel--phone" data-time="evening">
-      <div class="frame" data-scene data-viewbox="150 70 800 800"></div>
+      <div class="frame" data-scene data-viewbox="172 40 624 960"></div>
       <figcaption><span class="when">Evening, 375px</span></figcaption>
     </figure>
   </section>
@@ -248,7 +249,7 @@
         <path class="f-ink" opacity=".08" d="M648 410h132v14H648z"/>
         <rect class="f-paper" x="690" y="310" width="48" height="16" opacity=".55" transform="rotate(4 714 318)"/>
         <text class="note-label" x="662" y="350">today</text>
-        <text class="note-text" x="662" y="376">Finish the</text>
+        <text class="note-text" id="note-line-1" x="662" y="376">Finish the</text>
         <text class="note-text" x="662" y="400">chapter draft</text>
       </g>
 
@@ -279,7 +280,7 @@
       </g>
 
       <!-- ===== Wood stove: crackle ===== -->
-      <g id="stove">
+      <g id="stove" class="stove-group">
         <ellipse class="fire-floor" cx="1400" cy="912" rx="190" ry="24"/>
         <rect class="f-iron" x="1384" y="0" width="34" height="552"/>
         <rect class="f-iron-lit" x="1378" y="160" width="46" height="10" rx="2"/>
@@ -401,12 +402,12 @@
         <rect class="f-paper" x="1036" y="560" width="5" height="70" opacity=".1"/>
         <rect class="f-grille" x="1052" y="564" width="92" height="60" rx="6"/>
         <g class="f-ink" opacity=".3"><rect x="1058" y="574" width="80" height="3"/><rect x="1058" y="584" width="80" height="3"/><rect x="1058" y="594" width="80" height="3"/><rect x="1058" y="604" width="80" height="3"/><rect x="1058" y="614" width="80" height="3"/></g>
-        <rect class="f-note" x="1156" y="566" width="54" height="16" rx="3"/>
+        <rect class="f-note radio-dial" x="1156" y="566" width="54" height="16" rx="3"/>
         <g class="f-ink" opacity=".45"><rect x="1162" y="570" width="1.5" height="7"/><rect x="1172" y="570" width="1.5" height="5"/><rect x="1182" y="570" width="1.5" height="7"/><rect x="1192" y="570" width="1.5" height="5"/><rect x="1202" y="570" width="1.5" height="7"/></g>
-        <rect class="f-wood-dark" x="1180" y="566" width="2.5" height="16"/>
+        <rect class="f-wood-dark radio-needle" x="1180" y="566" width="2.5" height="16"/>
         <circle class="f-iron" cx="1183" cy="606" r="16"/>
         <circle class="f-iron-lit" cx="1183" cy="606" r="11"/>
-        <rect class="f-paper" x="1182" y="594" width="3" height="10" rx="1.5" transform="rotate(-40 1183 606)"/>
+        <g class="radio-knob"><rect class="f-paper" x="1181.5" y="594" width="3" height="10" rx="1.5"/></g>
         <path class="f-ink" opacity=".2" d="M1206 548h4a14 14 0 0 1 14 14v62a14 14 0 0 1-14 14h-4z"/>
       </g>
 
