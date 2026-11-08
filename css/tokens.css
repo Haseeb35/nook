@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Nook — design tokens
+   One mood: a rainy evening in an old apartment.
+   Six base colours. Every time of day re-tunes the same six; the artwork
+   never changes, only these values. Everything else is derived from them.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-var-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../fonts/jetbrains-mono-var.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Base palette: evening is the reference state ------------------------ */
+:root,
+[data-time="evening"] {
+  --wall: #2b2a33;
+  --wood: #7a5240;
+  --lamp: #f2c57c;
+  --rain: #5c7a99;
+  --plant: #4f6b4a;
+  --paper: #ede3d1;
+
+  /* light levels (0–1), used as opacities in the scene */
+  --daylight: 0.12;   /* light coming through the window */
+  --lamp-on: 1;       /* desk lamp */
+  --city-lights: 0.75;/* lit windows across the street */
+  --sky-lift: 10%;    /* how much paper is mixed into the sky */
+  --fire: 0.7;        /* stove glow; in the app this follows crackle volume */
+}
+
+[data-time="morning"] {
+  --wall: #5a5d68;
+  --wood: #8a604c;
+  --lamp: #f2c57c;
+  --rain: #afc2d3;
+  --plant: #5c7c5a;
+  --paper: #f1ebe0;
+
+  --daylight: 0.55;
+  --lamp-on: 0;
+  --city-lights: 0.08;
+  --sky-lift: 30%;
+}
+
+[data-time="afternoon"] {
+  --wall: #534b48;
+  --wood: #8c5d43;
+  --lamp: #f2c57c;
+  --rain: #a2a6a8;
+  --plant: #5f7449;
+  --paper: #f1e3cb;
+
+  --daylight: 0.4;
+  --lamp-on: 0;
+  --city-lights: 0.2;
+  --sky-lift: 22%;
+}
+
+[data-time="night"] {
+  --wall: #1f1e26;
+  --wood: #5b3d31;
+  --lamp: #edb869;
+  --rain: #33465c;
+  --plant: #3b5038;
+  --paper: #ddd2bf;
+
+  --daylight: 0;
+  --lamp-on: 1;
+  --city-lights: 1;
+  --sky-lift: 0%;
+}
+
+/* --- Derived tones ------------------------------------------------------
+   Declared on every element that can change the base palette, so the
+   mixes are recomputed there instead of being inherited pre-mixed.      */
+:root,
+[data-time] {
+  --ink:        color-mix(in oklab, var(--wall), black 48%);
+  --wall-deep:  color-mix(in oklab, var(--wall), black 20%);
+  --wall-lit:   color-mix(in oklab, var(--wall), var(--paper) 9%);
+  --iron:       color-mix(in oklab, var(--wall), black 38%);
+  --iron-lit:   color-mix(in oklab, var(--iron), var(--paper) 12%);
+  --wood-dark:  color-mix(in oklab, var(--wood), black 34%);
+  --wood-lit:   color-mix(in oklab, var(--wood), var(--lamp) 20%);
+  --brass:      color-mix(in oklab, var(--lamp), var(--wood) 45%);
+  --fur:        color-mix(in oklab, var(--wood), var(--lamp) 48%);
+  --note:       color-mix(in oklab, var(--lamp), var(--paper) 45%);
+  --curtain:    color-mix(in oklab, var(--paper), var(--wall) 52%);
+  --rug:        color-mix(in oklab, var(--rain), var(--wall) 62%);
+  --grille:     color-mix(in oklab, var(--paper), var(--wood) 40%);
+  --pot:        color-mix(in oklab, var(--wood), var(--lamp) 32%);
+  --sky:        color-mix(in oklab, var(--rain), var(--paper) var(--sky-lift));
+  --city-far:   color-mix(in oklab, var(--rain), var(--wall) 32%);
+  --city:       color-mix(in oklab, var(--rain), var(--wall) 64%);
+  --streak:     color-mix(in oklab, var(--rain), var(--paper) 50%);
+  --ember:      color-mix(in oklab, var(--wood), black 62%);
+
+  /* UI text and focus — checked for WCAG AA against --wall (see DESIGN.md) */
+  --text:       var(--paper);
+  --text-muted: color-mix(in oklab, var(--paper), var(--wall) 12%); /* ≥ 4.67:1 in every light */
+  --focus:      var(--lamp);
+}
+
+/* --- Type ---------------------------------------------------------------- */
+:root {
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --step--1: 0.8125rem;  /* 13px  labels under objects        */
+  --step-0:  0.9375rem;  /* 15px  hint, settings body          */
+  --step-1:  1.1875rem;  /* 19px  sticky note, popover titles  */
+  --step-2:  1.5rem;     /* 24px  one-line status sentences    */
+  --step-3:  2.375rem;   /* 38px  phone timer readout          */
+
+  /* --- Motion ---------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* settles, never overshoots */
+  --ease-soft: cubic-bezier(0.45, 0, 0.55, 1);/* breathing, steam          */
+  --dur-quick: 300ms;  /* labels, focus, slider thumbs   */
+  --dur-calm: 500ms;   /* drawers, popovers, object state */
+  --dur-slow: 800ms;   /* lamp warming, lighting changes  */
+}

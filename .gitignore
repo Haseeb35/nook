@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Secrets and local env
+.env
+.env*
+
+# Tooling
+node_modules/
+.claude/
+
+# Raw sound downloads (only processed loops are committed)
+sounds/raw/

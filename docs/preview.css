@@ -1,0 +1,156 @@
+/* Preview-only page chrome. Scene styling below is what Phase 2 lifts into css/room.css. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: #1a1920; }
+
+body {
+  margin: 0;
+  padding: 40px 32px 64px;
+  background: #1a1920;
+  color: #ede3d1;
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-size: var(--step-0);
+  line-height: 1.5;
+}
+
+.intro, .grid, .phone { max-width: 1376px; margin-inline: auto; }
+
+h1, h2 {
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+h1 { font-size: var(--step-3); }
+h2 { font-size: var(--step-2); margin-top: 56px; }
+p  { margin: 0 0 24px; color: #c9c0b1; max-width: 62ch; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 24px;
+}
+
+.panel { margin: 0; }
+
+.frame {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--wall);
+}
+
+.panel--phone { max-width: 375px; }
+.panel--phone .frame { aspect-ratio: 1; }
+
+figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding-top: 10px;
+}
+.when  { font-size: var(--step-1); }
+.hours { font-family: var(--font-mono); font-size: var(--step--1); color: #a9a092; }
+
+.swatches { display: flex; gap: 6px; margin-left: auto; }
+.swatch {
+  width: 18px; height: 18px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(237 227 209 / 0.18);
+}
+.swatch[data-token="wall"]  { background: var(--wall); }
+.swatch[data-token="wood"]  { background: var(--wood); }
+.swatch[data-token="lamp"]  { background: var(--lamp); }
+.swatch[data-token="rain"]  { background: var(--rain); }
+.swatch[data-token="plant"] { background: var(--plant); }
+.swatch[data-token="paper"] { background: var(--paper); }
+
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+@media (max-width: 720px) {
+  body { padding: 24px 16px 48px; }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  h1 { font-size: 1.75rem; }
+  .panel--phone { max-width: none; }
+}
+
+/* =====================  Scene  ===================== */
+
+.room { display: block; width: 100%; height: 100%; }
+
+/* Each fill class also exposes its colour as --c, so a stroked shape
+   (fill="none") can reuse the same class for its stroke. */
+.f-wall      { --c: var(--wall); }
+.f-wall-deep { --c: var(--wall-deep); }
+.f-wall-lit  { --c: var(--wall-lit); }
+.f-ink       { --c: var(--ink); }
+.f-iron      { --c: var(--iron); }
+.f-iron-lit  { --c: var(--iron-lit); }
+.f-wood      { --c: var(--wood); }
+.f-wood-dark { --c: var(--wood-dark); }
+.f-wood-lit  { --c: var(--wood-lit); }
+.f-brass     { --c: var(--brass); }
+.f-lamp      { --c: var(--lamp); }
+.f-rain      { --c: var(--rain); }
+.f-plant     { --c: var(--plant); }
+.f-paper     { --c: var(--paper); }
+.f-fur       { --c: var(--fur); }
+.f-note      { --c: var(--note); }
+.f-curtain   { --c: var(--curtain); }
+.f-rug       { --c: var(--rug); }
+.f-grille    { --c: var(--grille); }
+.f-pot       { --c: var(--pot); }
+.f-sky       { --c: var(--sky); }
+.f-city-far  { --c: var(--city-far); }
+.f-city      { --c: var(--city); }
+.f-ember     { --c: var(--ember); }
+
+[class*="f-"] { fill: var(--c); }
+[class*="f-"][fill="none"] { fill: none; stroke: var(--c); }
+
+/* Window */
+.city-lights { opacity: var(--city-lights); }
+.streak      { stroke: var(--streak); stroke-linecap: round; }
+.drops       { fill: var(--streak); opacity: 0.55; }
+.glass-sheen { opacity: 0.05; }
+
+/* Light. Flat shapes at low opacity, scaled by the time-of-day tokens. */
+.daylight   { fill: var(--paper); opacity: calc(var(--daylight) * 0.5); }
+.lamp-halo  { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.035); }
+.lamp-cone  { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.13); }
+.lamp-pool  { fill: var(--lamp);  opacity: calc(var(--lamp-on) * 0.4); }
+.bulb       { fill: var(--lamp);  opacity: calc(0.15 + var(--lamp-on) * 0.85); }
+
+/* Stove: in the app --fire follows the crackle volume */
+.fire       { opacity: calc(0.25 + var(--fire) * 0.75); }
+.fire-floor { fill: var(--lamp); opacity: calc(var(--fire) * 0.12); }
+
+/* Mug */
+.steam { stroke: var(--paper); opacity: 0.32; }
+
+/* Type inside the scene */
+.clock-digits {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  fill: var(--lamp);
+}
+.note-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  fill: var(--ink);
+  opacity: 0.7;
+}
+.note-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 18;
+  font-size: 18px;
+  fill: var(--ink);
+}
+
+.grain { opacity: 0.14; mix-blend-mode: overlay; pointer-events: none; }
