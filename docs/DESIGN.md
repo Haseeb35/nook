@@ -135,6 +135,13 @@ not the user's productivity.
 - Long break: *Four down. Make a proper cup.*
 - Paused: *Paused. The rain kept going.*
 - Muted: *Quiet room.*
+- Paused without rain: *Paused. Take your time.*
+- Break over: *Back to the desk. 25 minutes.*
+- A session that finished while the tab was closed: *That session ended while you were away.*
+
+The focus sentence is built from what is playing: rain *Rain's on.*, café
+*Kettle's warm.*, fire *Fire's lit.*, radio *Radio's low.*, or *The room is
+quiet.* when nothing is.
 
 ---
 
@@ -260,3 +267,31 @@ copies it into the SVG `viewBox`, so the buttons and the drawing always agree.
 - Cast shadows: flat ellipses in `--ink` at 35%, offset right.
 - Grain is the only texture. It sits above everything, so it unifies the layers.
 - Stroke widths are 3, 5 or 7 units, round caps.
+
+---
+
+## 7. The clock
+
+- **Accuracy.** A running session stores only its end timestamp; the time
+  left is always `endAt − Date.now()`. A `setTimeout` decides when to look
+  again (just after each whole second) but carries no time itself, so
+  throttled background tabs and a sleeping laptop can delay a redraw, never
+  skew the clock. The tab re-checks on `visibilitychange` and `pageshow`.
+- **Cycle.** Focus 25, short break 5, long break 15 after every 4 focus
+  sessions. All four are editable (clamped to sane ranges) in the clock's
+  settings popover, along with auto-start.
+- **Auto-start** chains from the moment the last session *ended*, not from
+  when the page noticed. If a session ended more than a minute before it
+  was noticed (tab frozen, lid closed), the next one waits for the visitor.
+- **Persistence.** Settings, the current session (including a running one)
+  and the round survive a reload. A session that ended while the page was
+  closed completes quietly on the next visit.
+- **On the face.** Amber digits for focus, soft green for breaks, dimmed when
+  paused. Pips under the display count the sessions in this cycle.
+- **The cat** sleeps (breathing) through focus. When a break starts it
+  stretches for a moment, then sits up and watches the rain. Under reduced
+  motion it simply wakes.
+- **Tab title**: `24:13 focus · Nook`, `04:59 break · Nook`, `12:00 paused · Nook`,
+  or just `Nook` when nothing is running.
+- **Tests**: `node --test tests/` runs the engine against a fake clock.
+

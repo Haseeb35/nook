@@ -121,6 +121,40 @@
   transform: rotate(calc(-130deg + var(--vol, 0.5) * 260deg));
 }
 
+/* --- Clock ----------------------------------------------------------------- */
+.clock-digits { transition: fill var(--dur-calm) var(--ease-out), opacity var(--dur-calm) var(--ease-out); }
+[data-status="paused"] > .clock-digits { opacity: 0.55; }
+[data-phase="short"] > .clock-digits,
+[data-phase="long"] > .clock-digits { fill: var(--break-ink); }
+.clock-pips circle { fill: var(--wood-dark); transition: fill var(--dur-calm) var(--ease-out); }
+.clock-pips .is-done { fill: var(--lamp); }
+
+/* --- Cat: asleep during focus, stretches, then sits up for the break ------- */
+.cat-pose { opacity: 0; transition: opacity 260ms var(--ease-out); }
+.cat[data-state="asleep"] .cat-pose--asleep,
+.cat[data-state="stretch"] .cat-pose--stretch,
+.cat[data-state="awake"] .cat-pose--awake { opacity: 1; }
+.cat-eye { fill: var(--cat-eye); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cat-pose--asleep .cat-body {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: cat-breathe 2.1s var(--ease-soft) infinite alternate;
+  }
+  .cat-tail {
+    transform-box: fill-box;
+    transform-origin: 0% 100%;
+    animation: cat-tail 7s var(--ease-soft) infinite;
+  }
+}
+@keyframes cat-breathe { to { transform: scaleY(1.025); } }
+@keyframes cat-tail {
+  0%, 72%, 100% { rotate: 0deg; }
+  82% { rotate: -7deg; }
+  91% { rotate: 3deg; }
+}
+
 /* Hover/focus: the object catches a little more light. */
 .room [data-hover] { filter: brightness(1.12); }
 .room g[id], .room [data-object] { transition: filter var(--dur-quick) var(--ease-out); }

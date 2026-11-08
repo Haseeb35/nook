@@ -10,7 +10,7 @@ const NOTE_WIDTH = 106;      // usable width on the sticky note, in viewBox unit
 const NOTE_PLACEHOLDER = 'One thing.';
 const NOTE_BASELINES = { normal: [376, 400, 424], small: [372, 391, 410] };
 
-export function createRoom({ onToggleSound, onVolume, onTask, onLamp }) {
+export function createRoom({ onToggleSound, onVolume, onTask, onLamp, onClock, onSkip, onSettings }) {
   const scene = document.getElementById('scene');
   const svg = scene.querySelector('svg.room');
   const drawer = document.getElementById('drawer');
@@ -184,7 +184,105 @@ export function createRoom({ onToggleSound, onVolume, onTask, onLamp }) {
     }
   });
 
-  return { renderSound, renderDrawerSummary, renderLamp, setTask };
+  // --- Clock --------------------------------------------------------------
+  const clockObj = objectByName.get('clock');
+  const clockBtn = clockObj.querySelector('.obj-btn');
+  const clockG = drawing('clock');
+  const digits = svg.getElementById('clock-digits');
+  const pips = svg.getElementById('clock-pips');
+  const readout = document.querySelector('.readout');
+  const readoutTime = readout.querySelector('.readout-time');
+  const status = document.getElementById('status');
+
+  clockBtn.addEventListener('click', () => onClock());
+  readout.addEventListener('click', () => onClock());
+  clockObj.querySelector('[data-action="skip"]').addEventListener('click', () => onSkip());
+  clockObj.querySelector('[data-action="settings"]')
+    .addEventListener('click', event => onSettings(event.currentTarget));
+
+  function renderClock(snap) {
+    const time = formatTime(snap.seconds);
+    if (digits.textContent !== time) digits.textContent = time;
+    if (readoutTime.textContent !== time) readoutTime.textContent = time;
+    clockG.dataset.phase = snap.phase;
+    clockG.dataset.status = snap.status;
+    readout.dataset.phase = snap.phase;
+    readout.dataset.status = snap.status;
+
+    renderPips(snap);
+
+    const phaseName = PHASE_NAMES[snap.phase];
+    clockObj.querySelector('.clock-phase').textContent =
+      snap.phase === 'focus' ? `${phaseName}, ${snap.session} of ${snap.longEvery}` : phaseName;
+    clockObj.querySelector('.tag-state').textContent = STATUS_WORDS[snap.status];
+
+    // Spoken labels change once a minute, not every second.
+    const action = snap.status === 'running' ? 'Pause' : 'Start';
+    const label = `${phaseName}, ${spokenTime(snap)}. ${action}`;
+    setIfChanged(clockBtn, 'aria-label', `Desk clock. ${label}`);
+    setIfChanged(readout, 'aria-label', label);
+  }
+
+  function renderPips({ longEvery, round, phase }) {
+    if (pips.childElementCount !== longEvery) {
+      pips.replaceChildren();
+      const gap = 10;
+      const first = 706 - ((longEvery - 1) * gap) / 2;
+      for (let i = 0; i < longEvery; i++) {
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('cx', String(first + i * gap));
+        dot.setAttribute('cy', '631');
+        dot.setAttribute('r', '2.4');
+        pips.append(dot);
+      }
+    }
+    const done = phase === 'long' ? longEvery : Math.min(round, longEvery);
+    [...pips.children].forEach((dot, i) => dot.classList.toggle('is-done', i < done));
+  }
+
+  function setStatus(text) {
+    if (status.textContent !== text) status.textContent = text;
+  }
+
+  // --- Cat ----------------------------------------------------------------
+  const catG = drawing('cat');
+  const catObj = objectByName.get('cat');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let catTimer = 0;
+
+  function setCat(state, { stretch = false } = {}) {
+    clearTimeout(catTimer);
+    const awake = state === 'awake';
+    if (awake && stretch && !reducedMotion.matches && catG.dataset.state === 'asleep') {
+      catG.dataset.state = 'stretch';
+      catTimer = setTimeout(() => { catG.dataset.state = 'awake'; }, 1400);
+    } else {
+      catG.dataset.state = state;
+    }
+    const word = awake ? 'awake' : 'asleep';
+    catObj.querySelector('.tag-state').textContent = word;
+    catObj.querySelector('.obj-btn').setAttribute('aria-label', `The cat, ${word}`);
+  }
+
+  return { renderSound, renderDrawerSummary, renderLamp, setTask, renderClock, setStatus, setCat, closeTags };
+}
+
+const PHASE_NAMES = { focus: 'Focus', short: 'Short break', long: 'Long break' };
+const STATUS_WORDS = { idle: 'ready', running: 'running', paused: 'paused' };
+
+export function formatTime(totalSeconds) {
+  const s = Math.max(0, totalSeconds);
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function spokenTime({ seconds, status }) {
+  const minutes = Math.ceil(seconds / 60);
+  const amount = minutes <= 1 ? (seconds <= 59 ? 'under a minute' : '1 minute') : `${minutes} minutes`;
+  return status === 'idle' ? amount : `${amount} left`;
+}
+
+function setIfChanged(el, attr, value) {
+  if (el.getAttribute(attr) !== value) el.setAttribute(attr, value);
 }
 
 // Copy the layout's --vb-* (set per breakpoint in ui.css) into the viewBox,

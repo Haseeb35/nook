@@ -113,6 +113,8 @@
   --city:       color-mix(in oklab, var(--rain), var(--wall) 64%);
   --streak:     color-mix(in oklab, var(--rain), var(--paper) 50%);
   --ember:      color-mix(in oklab, var(--wood), black 62%);
+  --break-ink:  color-mix(in oklab, var(--plant), var(--paper) 55%); /* clock digits on a break */
+  --cat-eye:    color-mix(in oklab, var(--plant), var(--lamp) 45%);
 
   /* UI text and focus — checked for WCAG AA against --wall (see DESIGN.md) */
   --text:       var(--paper);

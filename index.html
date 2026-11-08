@@ -20,6 +20,11 @@
 <body>
   <h1 class="visually-hidden">Nook, a focus room</h1>
 
+  <header class="hud">
+    <button class="readout" type="button" aria-describedby="status"><span class="readout-time">25:00</span></button>
+    <p class="status" id="status" role="status"></p>
+  </header>
+
   <main class="stage">
     <div class="scene" id="scene">
   <svg class="room" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
@@ -298,24 +303,70 @@
 
         <!-- ===== Cat, asleep ===== -->
         <g id="cat" class="cat" data-state="asleep">
-          <ellipse class="f-ink" cx="378" cy="638" rx="104" ry="8" opacity=".35"/>
-          <g class="cat-body">
-            <path class="f-fur" d="M266 636c-6-40 34-66 96-66 62 0 98 28 96 66z"/>
-            <path class="f-ink" opacity=".18" d="M404 574c38 8 56 32 54 62h-44c12-24 6-46-10-62z"/>
-            <path class="f-wood" fill="none" stroke-width="5" stroke-linecap="round" opacity=".55" d="M356 574c-3 6-3 11 0 16M380 575c-4 6-4 12-1 17M404 581c-4 6-4 11 0 16"/>
-            <path class="f-paper" opacity=".12" d="M272 626c2-26 26-46 62-52-26 12-46 30-52 52z"/>
-            <path class="f-ink" fill="none" stroke-width="3" stroke-linecap="round" opacity=".2" d="M392 634c-6-26 10-44 36-46"/>
+          <g class="cat-pose cat-pose--asleep">
+            <ellipse class="f-ink" cx="378" cy="638" rx="104" ry="8" opacity=".35"/>
+            <g class="cat-body">
+              <path class="f-fur" d="M266 636c-6-40 34-66 96-66 62 0 98 28 96 66z"/>
+              <path class="f-ink" opacity=".18" d="M404 574c38 8 56 32 54 62h-44c12-24 6-46-10-62z"/>
+              <path class="f-wood" fill="none" stroke-width="5" stroke-linecap="round" opacity=".55" d="M356 574c-3 6-3 11 0 16M380 575c-4 6-4 12-1 17M404 581c-4 6-4 11 0 16"/>
+              <path class="f-paper" opacity=".12" d="M272 626c2-26 26-46 62-52-26 12-46 30-52 52z"/>
+              <path class="f-ink" fill="none" stroke-width="3" stroke-linecap="round" opacity=".2" d="M392 634c-6-26 10-44 36-46"/>
+            </g>
+            <path class="f-fur" fill="none" stroke-width="15" stroke-linecap="round" d="M452 630c-4 10-60 14-128 8"/>
+            <path class="f-wood" fill="none" stroke-width="15" stroke-linecap="round" opacity=".6" d="M340 639c-6 0-12 0-16-1"/>
+            <g class="cat-head">
+              <path class="f-fur" d="M268 598l0-34 24 18zM298 584l22-16 0 30z"/>
+              <path class="f-brass" opacity=".7" d="M273 590l0-16 11 9zM304 586l10-8 0 13z"/>
+              <circle class="f-fur" cx="294" cy="608" r="30"/>
+              <path class="f-ink" opacity=".14" d="M312 584a30 30 0 0 1 2 48c6-15 6-33-2-48z"/>
+              <path class="f-ink" fill="none" stroke-width="2.4" stroke-linecap="round" d="M280 610q5 4 10 0M300 610q5 4 10 0"/>
+              <path class="f-wood-dark" d="M292 618h6l-3 4z"/>
+              <ellipse class="f-fur" cx="290" cy="636" rx="18" ry="6"/>
+            </g>
           </g>
-          <path class="f-fur" fill="none" stroke-width="15" stroke-linecap="round" d="M452 630c-4 10-60 14-128 8"/>
-          <path class="f-wood" fill="none" stroke-width="15" stroke-linecap="round" opacity=".6" d="M340 639c-6 0-12 0-16-1"/>
-          <g class="cat-head">
-            <path class="f-fur" d="M268 598l0-34 24 18zM298 584l22-16 0 30z"/>
-            <path class="f-brass" opacity=".7" d="M273 590l0-16 11 9zM304 586l10-8 0 13z"/>
-            <circle class="f-fur" cx="294" cy="608" r="30"/>
-            <path class="f-ink" opacity=".14" d="M312 584a30 30 0 0 1 2 48c6-15 6-33-2-48z"/>
-            <path class="f-ink" fill="none" stroke-width="2.4" stroke-linecap="round" d="M280 610q5 4 10 0M300 610q5 4 10 0"/>
-            <path class="f-wood-dark" d="M292 618h6l-3 4z"/>
-            <ellipse class="f-fur" cx="290" cy="636" rx="18" ry="6"/>
+
+          <!-- Stretch: a long play-bow, shown for a moment when the break starts -->
+          <g class="cat-pose cat-pose--stretch">
+            <ellipse class="f-ink" cx="372" cy="638" rx="104" ry="7" opacity=".35"/>
+            <path class="f-fur" fill="none" stroke-width="12" stroke-linecap="round" d="M444 578c14-14 18-38 8-58"/>
+            <rect class="f-fur" x="412" y="584" width="22" height="54" rx="10"/>
+            <rect class="f-ink" x="423" y="586" width="11" height="52" rx="5" opacity=".16"/>
+            <path class="f-fur" d="M298 632c22-12 56-34 94-54 28-14 58-16 62 6 4 22-14 36-42 38-40 4-82 16-114 10z"/>
+            <path class="f-ink" opacity=".16" d="M420 570c22-2 36 6 34 20-2 14-14 26-36 28 10-14 12-32 2-48z"/>
+            <path class="f-wood" fill="none" stroke-width="4" stroke-linecap="round" opacity=".5" d="M370 594c2 6 2 11 0 16M392 582c2 7 2 13 0 18M414 574c2 6 2 12 0 17"/>
+            <path class="f-paper" opacity=".12" d="M306 626c20-12 46-28 74-42-22 14-46 28-62 40z"/>
+            <rect class="f-fur" x="258" y="626" width="64" height="12" rx="6"/>
+            <path class="f-fur" d="M276 594l-2-30 22 16zM306 582l22-14-2 28z"/>
+            <path class="f-brass" opacity=".7" d="M280 588l-1-15 10 8zM311 580l9-6-1 12z"/>
+            <circle class="f-fur" cx="298" cy="606" r="26"/>
+            <path class="f-ink" opacity=".14" d="M314 586a26 26 0 0 1 2 40c5-13 5-27-2-40z"/>
+            <path class="f-ink" fill="none" stroke-width="2.4" stroke-linecap="round" d="M284 604q5 3 10 0M302 604q5 3 10 0"/>
+            <ellipse class="f-ink" cx="298" cy="618" rx="4" ry="3.5"/>
+          </g>
+
+          <!-- Awake: sitting up, watching the rain -->
+          <g class="cat-pose cat-pose--awake">
+            <ellipse class="f-ink" cx="376" cy="638" rx="64" ry="7" opacity=".35"/>
+            <path class="f-fur cat-tail" fill="none" stroke-width="12" stroke-linecap="round" d="M390 630c30 2 44-12 42-32-2-14-14-20-24-14"/>
+            <path class="f-fur" d="M326 636c-10-34-4-70 32-84 34 12 42 50 32 84z"/>
+            <path class="f-ink" opacity=".16" d="M374 558c20 16 24 48 16 78h-16c8-26 8-54 0-78z"/>
+            <path class="f-paper" opacity=".14" d="M346 598c-5 12-5 26 0 38h12c-5-12-5-26 0-38z"/>
+            <path class="f-wood" fill="none" stroke-width="4" stroke-linecap="round" opacity=".5" d="M376 574c6 4 8 10 8 16M380 598c5 3 7 8 7 13"/>
+            <ellipse class="f-fur" cx="344" cy="634" rx="12" ry="5"/>
+            <ellipse class="f-fur" cx="370" cy="634" rx="12" ry="5"/>
+            <g class="cat-head">
+              <path class="f-fur" d="M333 530l-3-32 22 17zM364 515l22-17-3 32z"/>
+              <path class="f-brass" opacity=".7" d="M337 524l-1-16 10 8zM370 515l10-8-1 16z"/>
+              <ellipse class="f-fur" cx="358" cy="536" rx="30" ry="27"/>
+              <path class="f-ink" opacity=".14" d="M376 515a30 27 0 0 1 0 42c6-13 6-29 0-42z"/>
+              <path class="f-wood" fill="none" stroke-width="3" stroke-linecap="round" opacity=".55" d="M352 513v8M358 511v9M364 513v8"/>
+              <ellipse class="cat-eye" cx="347" cy="535" rx="4.6" ry="5.2"/>
+              <ellipse class="cat-eye" cx="369" cy="535" rx="4.6" ry="5.2"/>
+              <ellipse class="f-ink" cx="347" cy="535" rx="1.4" ry="4"/>
+              <ellipse class="f-ink" cx="369" cy="535" rx="1.4" ry="4"/>
+              <path class="f-wood-dark" d="M355 544h6l-3 4z"/>
+              <path class="f-paper" fill="none" stroke-width="1.2" stroke-linecap="round" opacity=".35" d="M336 546h-14M336 550l-13 3M380 546h14M380 550l13 3"/>
+            </g>
           </g>
         </g>
 
@@ -343,6 +394,7 @@
           <rect class="f-ink" x="634" y="578" width="144" height="46" rx="4"/>
           <text class="clock-digits" id="clock-digits" x="706" y="612" text-anchor="middle">25:00</text>
           <g class="f-wood-dark"><rect x="630" y="636" width="16" height="4" rx="2"/><rect x="766" y="636" width="16" height="4" rx="2"/></g>
+          <g class="clock-pips" id="clock-pips"></g>
         </g>
 
         <!-- ===== Desk lamp ===== -->
@@ -426,9 +478,13 @@
         </div>
 
         <div class="obj" data-obj="clock">
-          <button class="obj-btn" type="button" aria-label="Desk clock, 25 minutes"></button>
+          <button class="obj-btn" type="button" aria-label="Desk clock. Focus, 25 minutes. Start" aria-describedby="status"></button>
           <div class="tag"><div class="tag-inner">
-            <span class="tag-label">Clock <span class="tag-state">25 minutes</span></span>
+            <span class="tag-label"><span class="clock-phase">Focus, 1 of 4</span> <span class="tag-state">ready</span></span>
+            <span class="tag-actions">
+              <button class="text-btn" type="button" data-action="skip">Skip</button>
+              <button class="text-btn" type="button" data-action="settings" aria-haspopup="dialog" aria-controls="settings">Settings</button>
+            </span>
           </div></div>
         </div>
 
@@ -449,6 +505,35 @@
       </div>
     </div>
   </main>
+
+  <div class="popover" id="settings" role="dialog" aria-labelledby="settings-title" hidden>
+    <h2 class="popover-title" id="settings-title">The clock</h2>
+    <form class="settings-form" novalidate>
+      <div class="field">
+        <label for="set-focus">Focus</label>
+        <span class="field-input"><input id="set-focus" name="focus" type="number" inputmode="numeric" min="1" max="120" step="1"> <span class="unit">min</span></span>
+      </div>
+      <div class="field">
+        <label for="set-short">Short break</label>
+        <span class="field-input"><input id="set-short" name="short" type="number" inputmode="numeric" min="1" max="30" step="1"> <span class="unit">min</span></span>
+      </div>
+      <div class="field">
+        <label for="set-long">Long break</label>
+        <span class="field-input"><input id="set-long" name="long" type="number" inputmode="numeric" min="1" max="60" step="1"> <span class="unit">min</span></span>
+      </div>
+      <div class="field">
+        <label for="set-every">Long break after</label>
+        <span class="field-input"><input id="set-every" name="longEvery" type="number" inputmode="numeric" min="2" max="8" step="1"> <span class="unit">sessions</span></span>
+      </div>
+      <label class="check">
+        <input name="autoStart" type="checkbox">
+        <span>Start the next session on its own</span>
+      </label>
+      <div class="popover-actions">
+        <button class="text-btn" type="submit">Done</button>
+      </div>
+    </form>
+  </div>
 
   <section class="drawer" id="drawer" data-open="false" aria-label="Sounds">
     <button class="drawer-handle" type="button" aria-expanded="false" aria-controls="drawer-body">
